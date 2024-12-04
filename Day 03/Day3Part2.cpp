@@ -50,7 +50,7 @@ int main() {
                         int comma = cmd.find(',');
                         int endPos = cmd.find(')');
 
-                        // parse for numbres to multiply
+                        // parse for numbers to multiply
                         int first = stoi(cmd.substr(startPos, comma-startPos));
                         int second = stoi(cmd.substr(comma+1, endPos - comma - 1));
 
