@@ -59,123 +59,131 @@ int main() {
     int dir = Up;
 
     while(!guardGone) {
+        pair<int, int> endPos;
         switch(dir) {
             case Up: {
-                vector<pair<int, int>> path(obstacles.size());
-                // copies to path all obstacles in the correct column above guard
-                auto it = copy_if(obstacles.begin(), obstacles.end(), path.begin(), [guard](pair<int, int> p) {
-                    return (p.second == guard.second && p.first < guard.first);
+                // gets closest obstacle in guards way
+                auto it = min_element(obstacles.begin(), obstacles.end(), [guard](const pair<int, int>& a, const pair<int, int>& b) {
+                    if(a.second != guard.second || a.first > guard.first) {
+                        return false;
+                    }
+                    else if(b.second != guard.second || b.first > guard.first) {
+                        return true;
+                    }
+                    else {
+                        return abs(a.first - guard.first) < abs(b.first - guard.first);
+                    }
                 });
-                if(it == path.begin()) {
+                if(it->second != guard.second) {
                     guardGone = true;
-                    path.push_back(make_pair(-1, guard.second));
+                    endPos = make_pair(-1, guard.second);
                 }
                 else {
-                    path.erase(it, path.end());
+                    endPos = *it;
                 }
 
-                // gets closest obstacle in guards way
-                it = min_element(path.begin(), path.end(), [guard](const pair<int, int>& a, const pair<int, int>& b) {
-                    return abs(a.first - guard.first) < abs(b.first - guard.first);
-                });
-
                 // adds all positions up to obstacle
-                for(int i = guard.first - 1; i > it->first; --i) {
+                for(int i = guard.first - 1; i > endPos.first; --i) {
                     visited.insert(make_pair(i, guard.second));
                 }
                 // set guard to position under obstacle
-                guard = make_pair(it->first + 1, guard.second);
+                guard = make_pair(endPos.first + 1, guard.second);
 
                 break;
             }
 
             case Right: {
-                vector<pair<int, int>> path(obstacles.size());
-                // copies to path all obstacles in the correct row to the right of guard
-                auto it = copy_if(obstacles.begin(), obstacles.end(), path.begin(), [guard](pair<int, int> p) {
-                    return (p.first == guard.first && p.second > guard.second);
+                // gets closest obstacle in guards way
+                auto it = min_element(obstacles.begin(), obstacles.end(), [guard](const pair<int, int>& a, const pair<int, int>& b) {
+                    if(a.first != guard.first || a.second < guard.second) {
+                        return false;
+                    }
+                    else if(b.first != guard.first || b.second < guard.second) {
+                        return true;
+                    }
+                    else {
+                        return abs(a.second - guard.second) < abs(b.second - guard.second);
+                    }
                 });
-                if(it == path.begin()) {
+                if(it -> first != guard.first) {
                     guardGone = true;
-                    path.push_back(make_pair(guard.first, columns));
+                    endPos = make_pair(guard.first, columns);
                 }
                 else {
-                    path.erase(it, path.end());
+                    endPos = *it;
                 }
 
-                // gets closest obstacle in guards way
-                it = min_element(path.begin(), path.end(), [guard](const pair<int, int>& a, const pair<int, int>& b) {
-                    return abs(a.second - guard.second) < abs(b.second - guard.second);
-                });
-
                 // adds all positions up to obstacle
-                for(int i = guard.second + 1; i < it->second; ++i) {
+                for(int i = guard.second + 1; i < endPos.second; ++i) {
                     visited.insert(make_pair(guard.first, i));
                 }
                 // set guard to position left of obstacle
-                guard = make_pair(guard.first, it->second - 1);
+                guard = make_pair(guard.first, endPos.second - 1);
                 
                 break;
             }
 
             case Down: {
-                vector<pair<int, int>> path(obstacles.size());
-                // copies to path all obstacles in the correct column under guard
-                auto it = copy_if(obstacles.begin(), obstacles.end(), path.begin(), [guard](pair<int, int> p) {
-                    return (p.second == guard.second && p.first > guard.first);
+                // gets closest obstacle in guards way
+                auto it = min_element(obstacles.begin(), obstacles.end(), [guard](const pair<int, int>& a, const pair<int, int>& b) {
+                    if(a.second != guard.second || a.first < guard.first) {
+                        return false;
+                    }
+                    else if(b.second != guard.second || b.first < guard.first) {
+                        return true;
+                    }
+                    else {
+                        return abs(a.first - guard.first) < abs(b.first - guard.first);
+                    }
                 });
-                if(it == path.begin()) {
+                if(it->second != guard.second) {
                     guardGone = true;
-                    path.push_back(make_pair(rows, guard.second));
+                    endPos = make_pair(rows, guard.second);
                 }
                 else {
-                    path.erase(it, path.end());
+                    endPos = *it;
                 }
 
-                // gets closest obstacle in guards way
-                it = min_element(path.begin(), path.end(), [guard](const pair<int, int>& a, const pair<int, int>& b) {
-                    return abs(a.first - guard.first) < abs(b.first - guard.first);
-                });
-
                 // adds all positions up to obstacle
-                for(int i = guard.first + 1; i < it->first; ++i) {
+                for(int i = guard.first + 1; i < endPos.first; ++i) {
                     visited.insert(make_pair(i, guard.second));
                 }
                 // set guard to position above obstacle
-                guard = make_pair(it->first - 1, guard.second);
+                guard = make_pair(endPos.first - 1, guard.second);
                 
                 break;
             }
 
             case Left: {
-                vector<pair<int, int>> path(obstacles.size());
-                // copies to path all obstacles in the correct row to the left of guard
-                auto it = copy_if(obstacles.begin(), obstacles.end(), path.begin(), [guard](pair<int, int> p) {
-                    return (p.first == guard.first && p.second < guard.second);
+                // gets closest obstacle in guards way
+                auto it = min_element(obstacles.begin(), obstacles.end(), [guard](const pair<int, int>& a, const pair<int, int>& b) {
+                    if(a.first != guard.first || a.second > guard.second) {
+                        return false;
+                    }
+                    else if(b.first != guard.first || b.second > guard.second) {
+                        return true;
+                    }
+                    else {
+                        return abs(a.second - guard.second) < abs(b.second - guard.second);
+                    }
                 });
-                if(it == path.begin()) {
+                if(it->first != guard.first) {
                     guardGone = true;
-                    path.push_back(make_pair(guard.first, -1));
+                    endPos = make_pair(guard.first, -1);
                 }
                 else {
-                    path.erase(it, path.end());
+                    endPos = *it;
                 }
 
-                // gets closest obstacle in guards way
-                it = min_element(path.begin(), path.end(), [guard](const pair<int, int>& a, const pair<int, int>& b) {
-                    return abs(a.second - guard.second) < abs(b.second - guard.second);
-                });
-
                 // adds all positions up to obstacle
-                for(int i = guard.second - 1; i > it->second; --i) {
+                for(int i = guard.second - 1; i > endPos.second; --i) {
                     visited.insert(make_pair(guard.first, i));
                 }
                 // set guard to position to the right of obstacle
-                guard = make_pair(guard.first, it->second + 1);
+                guard = make_pair(guard.first, endPos.second + 1);
                 
                 break;
             }
-            
         }
 
         if(dir == Left) {
